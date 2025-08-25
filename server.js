@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(express.json()); // so we can accept JSON POST bodies
+
 // --- SUCCESS PAYLOAD ---
 const successPayload = {
   "result": {
@@ -41,27 +43,25 @@ const successPayload = {
   "status_code": 200
 };
 
-// --- ERROR PAYLOAD: Stock Only ---
+// --- ERROR PAYLOADS ---
 const errorStockOnly = {
   "result": {
     "status": "success",
     "data": {
       "success": {
-        "101289873": {
-          "price": [
-            {
-              "sourceUpdatedAt": "2025-08-22T08:15:09.000Z",
-              "priceType": "normal",
-              "value": 45.5,
-              "startDate": "2025-08-22 04:15:09",
-              "endDate": null,
-              "currencyCode": "CLP",
-              "precision": 2,
-              "isPublished": true,
-              "priceGroup": "default"
-            }
-          ]
-        }
+        "price": [
+          {
+            "sourceUpdatedAt": "2025-08-22T08:15:09.000Z",
+            "priceType": "normal",
+            "value": 45.5,
+            "startDate": "2025-08-22 04:15:09",
+            "endDate": null,
+            "currencyCode": "CLP",
+            "precision": 2,
+            "isPublished": true,
+            "priceGroup": "default"
+          }
+        ]
       },
       "error": {
         "stock": {
@@ -69,35 +69,30 @@ const errorStockOnly = {
             "message": "NOT_FOUND",
             "data": ["101234295", "101234270"]
           }
-        },
-        "price": null
+        }
       }
     }
   }
 };
 
-// --- ERROR PAYLOAD: Price Only ---
 const errorPriceOnly = {
   "result": {
     "status": "success",
     "data": {
       "success": {
-        "101289873": {
-          "stock": {
-            "d85518e8-9a32-4806-92ea-91b7d21dcd36": {
-              "supply": 102,
-              "allocatedDemand": 0,
-              "reservedDemand": 0,
-              "imsAtp": 102,
-              "availableStock": 102,
-              "isFby": false,
-              "updated_at": "2025-08-22T08:15:10.013293Z"
-            }
+        "stock": {
+          "d85518e8-9a32-4806-92ea-91b7d21dcd36": {
+            "supply": 102,
+            "allocatedDemand": 0,
+            "reservedDemand": 0,
+            "imsAtp": 102,
+            "availableStock": 102,
+            "isFby": false,
+            "updated_at": "2025-08-22T08:15:10.013293Z"
           }
         }
       },
       "error": {
-        "stock": null,
         "price": {
           "error": {
             "message": "INTERNAL_SERVER_ERROR"
@@ -108,7 +103,6 @@ const errorPriceOnly = {
   }
 };
 
-// --- ERROR PAYLOAD: Both Stock + Price ---
 const errorBoth = {
   "result": {
     "status": "success",
@@ -133,25 +127,25 @@ const errorBoth = {
 
 // --- ROUTES ---
 // Success
-app.get("/stock-success", (req, res) => {
+app.post("/stock-success", (req, res) => {
   res.status(200).json(successPayload);
 });
 
 // Error: stock only
-app.get("/stock/v1/products/master-data/list", (req, res) => {
+app.post("/stock/v1/products/master-data/list", (req, res) => {
   res.status(500).json(errorStockOnly);
 });
 
 // Error: price only
-app.get("/price/v1/products/master-data/list", (req, res) => {
+app.post("/price/v1/products/master-data/list", (req, res) => {
   res.status(500).json(errorPriceOnly);
 });
 
 // Error: both stock + price
-app.get("/stockPrice/v1/products/master-data/list", (req, res) => {
+app.post("/stockPrice/v1/products/master-data/list", (req, res) => {
   res.status(500).json(errorBoth);
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Mock server running on port ${PORT}`);
+  console.log(`Mock server running on port ${PORT}`);
 });
