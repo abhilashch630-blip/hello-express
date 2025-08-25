@@ -2,147 +2,169 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json()); // so we can accept JSON POST bodies
+app.use(express.json()); // parse JSON body
 
-// --- SUCCESS PAYLOAD ---
-const successPayload = {
-  "result": {
-    "status": "success",
-    "data": {
-      "success": {
-        "101289873": {
-          "price": [
-            {
-              "sourceUpdatedAt": "2025-08-22T08:15:09.000Z",
-              "priceType": "normal",
-              "value": 45.5,
-              "startDate": "2025-08-22 04:15:09",
-              "endDate": null,
-              "currencyCode": "CLP",
-              "precision": 2,
-              "isPublished": true,
-              "priceGroup": "default"
-            }
-          ],
-          "stock": {
-            "d85518e8-9a32-4806-92ea-91b7d21dcd36": {
-              "supply": 102,
-              "allocatedDemand": 0,
-              "reservedDemand": 0,
-              "imsAtp": 102,
-              "availableStock": 102,
-              "isFby": false,
-              "updated_at": "2025-08-22T08:15:10.013293Z"
-            }
-          }
-        }
-      },
-      "error": null
-    }
-  },
-  "status_code": 200
-};
+// Helper to build dynamic success payload
+function buildSuccessPayload(offeringIds, requestedInfo, nodeIds) {
+  const successData = {};
 
-// --- ERROR PAYLOADS ---
-const errorStockOnly = {
-  "result": {
-    "status": "success",
-    "data": {
-      "success": {
-        "price": [
-          {
-            "sourceUpdatedAt": "2025-08-22T08:15:09.000Z",
-            "priceType": "normal",
-            "value": 45.5,
-            "startDate": "2025-08-22 04:15:09",
-            "endDate": null,
-            "currencyCode": "CLP",
-            "precision": 2,
-            "isPublished": true,
-            "priceGroup": "default"
-          }
-        ]
-      },
-      "error": {
-        "stock": {
-          "error": {
-            "message": "NOT_FOUND",
-            "data": ["101234295", "101234270"]
-          }
-        }
-      }
-    }
-  }
-};
+  offeringIds.forEach((id) => {
+    successData[id] = {};
 
-const errorPriceOnly = {
-  "result": {
-    "status": "success",
-    "data": {
-      "success": {
-        "stock": {
-          "d85518e8-9a32-4806-92ea-91b7d21dcd36": {
-            "supply": 102,
-            "allocatedDemand": 0,
-            "reservedDemand": 0,
-            "imsAtp": 102,
-            "availableStock": 102,
-            "isFby": false,
-            "updated_at": "2025-08-22T08:15:10.013293Z"
-          }
-        }
-      },
-      "error": {
-        "price": {
-          "error": {
-            "message": "INTERNAL_SERVER_ERROR"
-          }
-        }
-      }
-    }
-  }
-};
-
-const errorBoth = {
-  "result": {
-    "status": "success",
-    "data": {
-      "success": {},
-      "error": {
-        "stock": {
-          "error": {
-            "message": "NOT_FOUND",
-            "data": ["101234295", "101234270", "101223631", "101135918p"]
-          }
+    if (!requestedInfo || requestedInfo.includes("price")) {
+      successData[id].price = [
+        {
+          sourceUpdatedAt: new Date().toISOString(),
+          priceType: "normal",
+          value: parseFloat((Math.random() * 100).toFixed(2)),
+          startDate: new Date().toISOString().replace("T", " ").split(".")[0],
+          endDate: null,
+          currencyCode: "CLP",
+          precision: 2,
+          isPublished: true,
+          priceGroup: "default",
         },
-        "price": {
-          "error": {
-            "message": "INTERNAL_SERVER_ERROR"
-          }
-        }
-      }
+      ];
     }
-  }
-};
+
+    if (!requestedInfo || requestedInfo.includes("stock")) {
+      successData[id].stock = {};
+      (nodeIds && nodeIds.length ? nodeIds : ["default-node"]).forEach((node) => {
+        successData[id].stock[node] = {
+          supply: Math.floor(Math.random() * 200),
+          allocatedDemand: 0,
+          reservedDemand: 0,
+          imsAtp: Math.floor(Math.random() * 200),
+          availableStock: Math.floor(Math.random() * 200),
+          isFby: false,
+          updated_at: new Date().toISOString(),
+        };
+      });
+    }
+  });
+
+  return {
+    result: {
+      status: "success",
+      data: {
+        success: successData,
+        error: null,
+      },
+    },
+    status_code: 200,
+  };
+}
 
 // --- ROUTES ---
-// Success
+
+// ✅ Success (dynamic with offeringIds)
 app.post("/stock-success", (req, res) => {
-  res.status(200).json(successPayload);
+  const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
+  res.status(200).json(buildSuccessPayload(offeringIds, requestedInfo, nodeIds));
 });
 
+// ❌ Error: Stock NOT_FOUND, still return price
 app.post(["/stock/v1/products/master-data/list", "/stock/v1/products/master-data/list/"], (req, res) => {
-  res.status(500).json(errorStockOnly);
+  const { offeringIds = [] } = req.body;
+  res.status(500).json({
+    result: {
+      status: "success",
+      data: {
+        success: {
+          price: [
+            {
+              sourceUpdatedAt: new Date().toISOString(),
+              priceType: "normal",
+              value: parseFloat((Math.random() * 100).toFixed(2)),
+              startDate: new Date().toISOString().replace("T", " ").split(".")[0],
+              endDate: null,
+              currencyCode: "CLP",
+              precision: 2,
+              isPublished: true,
+              priceGroup: "default",
+            },
+          ],
+        },
+        error: {
+          stock: {
+            error: {
+              message: "NOT_FOUND",
+              data: offeringIds,
+            },
+          },
+        },
+      },
+    },
+  });
 });
 
+// ❌ Error: Price INTERNAL_SERVER_ERROR, still return stock
 app.post(["/price/v1/products/master-data/list", "/price/v1/products/master-data/list/"], (req, res) => {
-  res.status(500).json(errorPriceOnly);
+  const { offeringIds = [], nodeIds = [] } = req.body;
+
+  const stockSuccess = {};
+  offeringIds.forEach((id) => {
+    stockSuccess[id] = {
+      stock: {},
+    };
+    (nodeIds && nodeIds.length ? nodeIds : ["default-node"]).forEach((node) => {
+      stockSuccess[id].stock[node] = {
+        supply: Math.floor(Math.random() * 200),
+        allocatedDemand: 0,
+        reservedDemand: 0,
+        imsAtp: Math.floor(Math.random() * 200),
+        availableStock: Math.floor(Math.random() * 200),
+        isFby: false,
+        updated_at: new Date().toISOString(),
+      };
+    });
+  });
+
+  res.status(500).json({
+    result: {
+      status: "success",
+      data: {
+        success: stockSuccess,
+        error: {
+          price: {
+            error: {
+              message: "INTERNAL_SERVER_ERROR",
+            },
+          },
+        },
+      },
+    },
+  });
 });
 
+// ❌ Error: Both stock & price fail
 app.post(["/stockPrice/v1/products/master-data/list", "/stockPrice/v1/products/master-data/list/"], (req, res) => {
-  res.status(500).json(errorBoth);
+  const { offeringIds = [] } = req.body;
+
+  res.status(500).json({
+    result: {
+      status: "success",
+      data: {
+        success: {},
+        error: {
+          stock: {
+            error: {
+              message: "NOT_FOUND",
+              data: offeringIds,
+            },
+          },
+          price: {
+            error: {
+              message: "INTERNAL_SERVER_ERROR",
+            },
+          },
+        },
+      },
+    },
+  });
 });
 
+// --- START SERVER ---
 app.listen(PORT, () => {
   console.log(`Mock server running on port ${PORT}`);
 });
