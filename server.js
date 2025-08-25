@@ -138,20 +138,20 @@ app.get("/stock-success", (req, res) => {
 });
 
 // Error: stock only
-app.get("/stock-error", (req, res) => {
+app.get("/stock/v1/products/master-data/list", (req, res) => {
   res.status(500).json(errorStockOnly);
 });
 
 // Error: price only
-app.get("/price-error", (req, res) => {
+app.get("/price/v1/products/master-data/list", (req, res) => {
   res.status(500).json(errorPriceOnly);
 });
 
 // Error: both stock + price
-app.get("/both-error", (req, res) => {
+app.get("/stockPrice/v1/products/master-data/list", (req, res) => {
   res.status(500).json(errorBoth);
 });
 
 app.listen(PORT, () => {
-  console.log(`Mock server running on port ${PORT}`);
+  console.log(`✅ Mock server running on port ${PORT}`);
 });
