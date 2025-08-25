@@ -196,7 +196,7 @@ app.post(["/price/v1/products/master-data/list", "/price/v1/products/master-data
   });
 });
 
-// ❌ Error: Price INTERNAL_SERVER_ERROR (only if requestedInfo has price)
+// ❌ Error: Price Data not found (only if requestedInfo has price)
 app.post(["/price2/v1/products/master-data/list", "/price/v1/products/master-data/list/"], (req, res) => {
   const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
 
