@@ -64,39 +64,48 @@ app.post("/stock-success", (req, res) => {
 });
 
 // ❌ Error: Stock NOT_FOUND, still return price
-app.post(["/stock/v1/products/master-data/list", "/stock/v1/products/master-data/list/"], (req, res) => {
-  const { offeringIds = [] } = req.body;
-  res.status(500).json({
-    result: {
-      status: "success",
-      data: {
-        success: {
-          price: [
-            {
-              sourceUpdatedAt: new Date().toISOString(),
-              priceType: "normal",
-              value: parseFloat((Math.random() * 100).toFixed(2)),
-              startDate: new Date().toISOString().replace("T", " ").split(".")[0],
-              endDate: null,
-              currencyCode: "CLP",
-              precision: 2,
-              isPublished: true,
-              priceGroup: "default",
-            },
-          ],
-        },
-        error: {
-          stock: {
-            error: {
-              message: "NOT_FOUND",
-              data: offeringIds,
+app.post(
+  ["/stock/v1/products/master-data/list", "/stock/v1/products/master-data/list/"],
+  (req, res) => {
+    const { offeringIds = [] } = req.body;
+
+    const successData = {};
+    offeringIds.forEach((id) => {
+      successData[id] = {
+        price: [
+          {
+            sourceUpdatedAt: new Date().toISOString(),
+            priceType: "normal",
+            value: parseFloat((Math.random() * 100).toFixed(2)),
+            startDate: new Date().toISOString().replace("T", " ").split(".")[0],
+            endDate: null,
+            currencyCode: "CLP",
+            precision: 2,
+            isPublished: true,
+            priceGroup: "default",
+          },
+        ],
+      };
+    });
+
+    res.status(500).json({
+      result: {
+        status: "success",
+        data: {
+          success: successData,
+          error: {
+            stock: {
+              error: {
+                message: "NOT_FOUND",
+                data: offeringIds,
+              },
             },
           },
         },
       },
-    },
-  });
-});
+    });
+  }
+);
 
 // ❌ Error: Price INTERNAL_SERVER_ERROR, still return stock
 app.post(["/price/v1/products/master-data/list", "/price/v1/products/master-data/list/"], (req, res) => {
