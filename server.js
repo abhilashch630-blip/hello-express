@@ -88,7 +88,7 @@ app.post(
       };
     });
 
-    res.status(500).json({
+    res.status(200).json({
       result: {
         status: "success",
         data: {
@@ -129,7 +129,7 @@ app.post(["/price/v1/products/master-data/list", "/price/v1/products/master-data
     });
   });
 
-  res.status(500).json({
+  res.status(200).json({
     result: {
       status: "success",
       data: {
@@ -150,7 +150,7 @@ app.post(["/price/v1/products/master-data/list", "/price/v1/products/master-data
 app.post(["/stockPrice/v1/products/master-data/list", "/stockPrice/v1/products/master-data/list/"], (req, res) => {
   const { offeringIds = [] } = req.body;
 
-  res.status(500).json({
+  res.status(200).json({
     result: {
       status: "success",
       data: {
