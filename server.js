@@ -63,9 +63,9 @@ app.post("/stock-success", (req, res) => {
   res.status(200).json(buildSuccessPayload(offeringIds, requestedInfo, nodeIds));
 });
 
-// ❌ Error: Stock NOT_FOUND, still return price
-app.post("/stock/v1/products/master-data/list", (req, res) => {
-  const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
+// --- PRICE ENDPOINT ---
+app.post("/price/v1/products/master-data/list", (req, res) => {
+  const { offeringIds = [], requestedInfo = [] } = req.body;
 
   const response = {
     result: {
@@ -78,54 +78,37 @@ app.post("/stock/v1/products/master-data/list", (req, res) => {
     status_code: 200
   };
 
-  offeringIds.forEach((id, index) => {
+  offeringIds.forEach((id) => {
     let successObj = {};
-
-    if (requestedInfo.includes("stock")) {
-      // return dummy stock
-      successObj.stock = {
-        [nodeIds[0] || "default-node"]: {
-          supply: 50 + index,
-          allocatedDemand: 0,
-          reservedDemand: 0,
-          imsAtp: 50 + index,
-          availableStock: 50 + index,
-          isFby: false,
-          updated_at: new Date().toISOString()
-        }
-      };
-    }
+    let errorObj = {};
 
     if (requestedInfo.includes("price")) {
-      // return dummy price
-      successObj.price = [
-        {
-          sourceUpdatedAt: new Date().toISOString(),
-          priceType: "normal",
-          value: 20 + index,
-          startDate: new Date().toISOString(),
-          endDate: null,
-          currencyCode: "CLP",
-          precision: 2,
-          isPublished: true,
-          priceGroup: "default"
+      // Always return INTERNAL_SERVER_ERROR for price
+      errorObj.price = {
+        error: {
+          message: "INTERNAL_SERVER_ERROR"
         }
-      ];
+      };
+    } else {
+      // Price not requested → empty array
+      successObj.price = [];
+    }
+
+    if (requestedInfo.includes("stock")) {
+      // Stock requested → empty object (no error)
+      successObj.stock = {};
     }
 
     if (Object.keys(successObj).length > 0) {
       response.result.data.success[id] = successObj;
-    } else {
-      response.result.data.error[id] = {
-        error: {
-          message: "NO_REQUESTED_INFO",
-          data: requestedInfo
-        }
-      };
+    }
+
+    if (Object.keys(errorObj).length > 0) {
+      response.result.data.error[id] = errorObj;
     }
   });
 
-  // Clean empty error/success
+  // Clean up empty values
   if (Object.keys(response.result.data.success).length === 0) {
     response.result.data.success = null;
   }
@@ -136,9 +119,9 @@ app.post("/stock/v1/products/master-data/list", (req, res) => {
   res.json(response);
 });
 
-// ❌ Error: Price Error, still return Stock
-app.post("/price/v1/products/master-data/list", (req, res) => {
-  const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
+// --- STOCK ENDPOINT ---
+app.post("/stock/v1/products/master-data/list", (req, res) => {
+  const { offeringIds = [], requestedInfo = [] } = req.body;
 
   const response = {
     result: {
@@ -151,55 +134,38 @@ app.post("/price/v1/products/master-data/list", (req, res) => {
     status_code: 200
   };
 
-  offeringIds.forEach((id, index) => {
+  offeringIds.forEach((id) => {
     let successObj = {};
-
-    if (requestedInfo.includes("price")) {
-      // instead of forcing error, let's provide dummy price
-      successObj.price = [
-        {
-          sourceUpdatedAt: new Date().toISOString(),
-          priceType: "normal",
-          value: 40 + index, // dynamic value
-          startDate: new Date().toISOString(),
-          endDate: null,
-          currencyCode: "CLP",
-          precision: 2,
-          isPublished: true,
-          priceGroup: "default"
-        }
-      ];
-    }
+    let errorObj = {};
 
     if (requestedInfo.includes("stock")) {
-      // dummy stock
-      successObj.stock = {
-        [nodeIds[0] || "default-node"]: {
-          supply: 100 + index,
-          allocatedDemand: 0,
-          reservedDemand: 0,
-          imsAtp: 100 + index,
-          availableStock: 100 + index,
-          isFby: false,
-          updated_at: new Date().toISOString()
+      // Always return NOT_FOUND for stock
+      errorObj.stock = {
+        error: {
+          message: "NOT_FOUND",
+          data: [id] // return the requested offeringId in error
         }
       };
+    } else {
+      // Stock not requested → empty object
+      successObj.stock = {};
     }
 
-    // If no info found, then push into error
+    if (requestedInfo.includes("price")) {
+      // Price requested → empty array (no error)
+      successObj.price = [];
+    }
+
     if (Object.keys(successObj).length > 0) {
       response.result.data.success[id] = successObj;
-    } else {
-      response.result.data.error[id] = {
-        error: {
-          message: "NO_REQUESTED_INFO",
-          data: requestedInfo
-        }
-      };
+    }
+
+    if (Object.keys(errorObj).length > 0) {
+      response.result.data.error[id] = errorObj;
     }
   });
 
-  // Clean empty error/success
+  // Clean up empty values
   if (Object.keys(response.result.data.success).length === 0) {
     response.result.data.success = null;
   }
