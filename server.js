@@ -223,9 +223,10 @@ app.post(["/price2/v1/products/master-data/list", "/price/v1/products/master-dat
   const error = {};
   if (!requestedInfo || requestedInfo.includes("price")) {
    error: {
-        message: "Not Found",
-        data: offeringIds,
-      }
+      error: {
+      message: "Not Found",
+      data: offeringIds,
+    },
     };
   }
 
