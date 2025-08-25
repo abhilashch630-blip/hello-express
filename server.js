@@ -64,49 +64,79 @@ app.post("/stock-success", (req, res) => {
 });
 
 // ❌ Error: Stock NOT_FOUND, still return price
-app.post(
-  ["/stock/v1/products/master-data/list", "/stock/v1/products/master-data/list/"],
-  (req, res) => {
-    const { offeringIds = [] } = req.body;
+app.post("/stock/v1/products/master-data/list", (req, res) => {
+  const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
 
-    const successData = {};
-    offeringIds.forEach((id) => {
-      successData[id] = {
-        price: [
-          {
-            sourceUpdatedAt: new Date().toISOString(),
-            priceType: "normal",
-            value: parseFloat((Math.random() * 100).toFixed(2)),
-            startDate: new Date().toISOString().replace("T", " ").split(".")[0],
-            endDate: null,
-            currencyCode: "CLP",
-            precision: 2,
-            isPublished: true,
-            priceGroup: "default",
-          },
-        ],
+  const response = {
+    result: {
+      status: "success",
+      data: {
+        success: {},
+        error: {}
+      }
+    },
+    status_code: 200
+  };
+
+  offeringIds.forEach((id, index) => {
+    let successObj = {};
+
+    if (requestedInfo.includes("stock")) {
+      // return dummy stock
+      successObj.stock = {
+        [nodeIds[0] || "default-node"]: {
+          supply: 50 + index,
+          allocatedDemand: 0,
+          reservedDemand: 0,
+          imsAtp: 50 + index,
+          availableStock: 50 + index,
+          isFby: false,
+          updated_at: new Date().toISOString()
+        }
       };
-    });
+    }
 
-    res.status(500).json({
-      result: {
-        status: "success",
-        data: {
-          success: successData,
-          error: {
-            stock: {
-              error: {
-                message: "NOT_FOUND",
-                data: offeringIds,
-              },
-            },
-          },
-        },
-      },
-    });
+    if (requestedInfo.includes("price")) {
+      // return dummy price
+      successObj.price = [
+        {
+          sourceUpdatedAt: new Date().toISOString(),
+          priceType: "normal",
+          value: 20 + index,
+          startDate: new Date().toISOString(),
+          endDate: null,
+          currencyCode: "CLP",
+          precision: 2,
+          isPublished: true,
+          priceGroup: "default"
+        }
+      ];
+    }
+
+    if (Object.keys(successObj).length > 0) {
+      response.result.data.success[id] = successObj;
+    } else {
+      response.result.data.error[id] = {
+        error: {
+          message: "NO_REQUESTED_INFO",
+          data: requestedInfo
+        }
+      };
+    }
+  });
+
+  // Clean empty error/success
+  if (Object.keys(response.result.data.success).length === 0) {
+    response.result.data.success = null;
   }
-);
+  if (Object.keys(response.result.data.error).length === 0) {
+    response.result.data.error = null;
+  }
 
+  res.json(response);
+});
+
+// ❌ Error: Price Error, still return Stock
 app.post("/price/v1/products/master-data/list", (req, res) => {
   const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
 
