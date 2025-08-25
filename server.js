@@ -11,22 +11,43 @@ function buildSuccessPayload(offeringIds, requestedInfo, nodeIds) {
   offeringIds.forEach((id) => {
     successData[id] = {};
 
+    // --- PRICE ---
     if (!requestedInfo || requestedInfo.includes("price")) {
-      successData[id].price = [
-        {
+      successData[id].price = [];
+
+      // Normal price always
+      successData[id].price.push({
+        sourceUpdatedAt: new Date().toISOString(),
+        priceType: "normal",
+        value: parseFloat((Math.random() * 100).toFixed(2)),
+        startDate: new Date().toISOString().replace("T", " ").split(".")[0],
+        endDate: null,
+        currencyCode: "CLP",
+        precision: 2,
+        isPublished: true,
+        priceGroup: "default",
+      });
+
+      // Randomly add event price (50% chance)
+      if (Math.random() < 0.5) {
+        const start = new Date();
+        start.setDate(start.getDate() - 2); // 2 days ago
+        const end = new Date();
+        successData[id].price.push({
           sourceUpdatedAt: new Date().toISOString(),
-          priceType: "normal",
-          value: parseFloat((Math.random() * 100).toFixed(2)),
-          startDate: new Date().toISOString().replace("T", " ").split(".")[0],
-          endDate: null,
+          priceType: "event",
+          value: parseFloat((Math.random() * 50 + 1).toFixed(2)),
+          startDate: start.toISOString().replace("T", " ").split(".")[0],
+          endDate: end.toISOString().replace("T", " ").split(".")[0],
           currencyCode: "CLP",
           precision: 2,
           isPublished: true,
-          priceGroup: "default",
-        },
-      ];
+          priceGroup: "event",
+        });
+      }
     }
 
+    // --- STOCK ---
     if (!requestedInfo || requestedInfo.includes("stock")) {
       successData[id].stock = {};
       (nodeIds && nodeIds.length ? nodeIds : ["default-node"]).forEach((node) => {
@@ -74,19 +95,38 @@ app.post(
       successData[id] = {};
 
       if (!requestedInfo || requestedInfo.includes("price")) {
-        successData[id].price = [
-          {
+        successData[id].price = [];
+
+        // Normal price always
+        successData[id].price.push({
+          sourceUpdatedAt: new Date().toISOString(),
+          priceType: "normal",
+          value: parseFloat((Math.random() * 100).toFixed(2)),
+          startDate: new Date().toISOString().replace("T", " ").split(".")[0],
+          endDate: null,
+          currencyCode: "CLP",
+          precision: 2,
+          isPublished: true,
+          priceGroup: "default",
+        });
+
+        // Randomly add event price
+        if (Math.random() < 0.5) {
+          const start = new Date();
+          start.setDate(start.getDate() - 2);
+          const end = new Date();
+          successData[id].price.push({
             sourceUpdatedAt: new Date().toISOString(),
-            priceType: "normal",
-            value: parseFloat((Math.random() * 100).toFixed(2)),
-            startDate: new Date().toISOString().replace("T", " ").split(".")[0],
-            endDate: null,
+            priceType: "event",
+            value: parseFloat((Math.random() * 50 + 1).toFixed(2)),
+            startDate: start.toISOString().replace("T", " ").split(".")[0],
+            endDate: end.toISOString().replace("T", " ").split(".")[0],
             currencyCode: "CLP",
             precision: 2,
             isPublished: true,
-            priceGroup: "default",
-          },
-        ];
+            priceGroup: "event",
+          });
+        }
       }
     });
 
