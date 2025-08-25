@@ -196,6 +196,50 @@ app.post(["/price/v1/products/master-data/list", "/price/v1/products/master-data
   });
 });
 
+// ❌ Error: Price INTERNAL_SERVER_ERROR (only if requestedInfo has price)
+app.post(["/price2/v1/products/master-data/list", "/price/v1/products/master-data/list/"], (req, res) => {
+  const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
+
+  const successData = {};
+  offeringIds.forEach((id) => {
+    successData[id] = {};
+
+    if (!requestedInfo || requestedInfo.includes("stock")) {
+      successData[id].stock = {};
+      (nodeIds && nodeIds.length ? nodeIds : ["default-node"]).forEach((node) => {
+        successData[id].stock[node] = {
+          supply: Math.floor(Math.random() * 200),
+          allocatedDemand: 0,
+          reservedDemand: 0,
+          imsAtp: Math.floor(Math.random() * 200),
+          availableStock: Math.floor(Math.random() * 200),
+          isFby: false,
+          updated_at: new Date().toISOString(),
+        };
+      });
+    }
+  });
+
+  const error = {};
+  if (!requestedInfo || requestedInfo.includes("price")) {
+   error: {
+        message: "Not Found",
+        data: offeringIds,
+      },
+    };
+  }
+
+  res.status(200).json({
+    result: {
+      status: "success",
+      data: {
+        success: successData,
+        error: Object.keys(error).length > 0 ? error : null,
+      },
+    },
+  });
+});
+
 // ❌ Error: Both stock & price fail (only if requestedInfo has them)
 app.post(["/stockPrice/v1/products/master-data/list", "/stockPrice/v1/products/master-data/list/"], (req, res) => {
   const { offeringIds = [], requestedInfo = [] } = req.body;
