@@ -131,18 +131,15 @@ app.post("/stock-success", (req, res) => {
   res.status(200).json(successPayload);
 });
 
-// Error: stock only
-app.post("/stock/v1/products/master-data/list", (req, res) => {
+app.post(["/stock/v1/products/master-data/list", "/stock/v1/products/master-data/list/"], (req, res) => {
   res.status(500).json(errorStockOnly);
 });
 
-// Error: price only
-app.post("/price/v1/products/master-data/list", (req, res) => {
+app.post(["/price/v1/products/master-data/list", "/price/v1/products/master-data/list/"], (req, res) => {
   res.status(500).json(errorPriceOnly);
 });
 
-// Error: both stock + price
-app.post("/stockPrice/v1/products/master-data/list", (req, res) => {
+app.post(["/stockPrice/v1/products/master-data/list", "/stockPrice/v1/products/master-data/list/"], (req, res) => {
   res.status(500).json(errorBoth);
 });
 
