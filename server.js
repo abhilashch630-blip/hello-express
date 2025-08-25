@@ -221,14 +221,14 @@ app.post(["/price2/v1/products/master-data/list", "/price/v1/products/master-dat
   });
 
   const error = {};
-  if (!requestedInfo || requestedInfo.includes("price")) {
-   error: {
-      error: {
+if (!requestedInfo || requestedInfo.includes("price")) {
+  error.price = {
+    error: {
       message: "Not Found",
       data: offeringIds,
     },
-    };
-  }
+  };
+}
 
   res.status(200).json({
     result: {
