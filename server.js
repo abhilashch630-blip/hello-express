@@ -225,7 +225,7 @@ app.post(["/price2/v1/products/master-data/list", "/price/v1/products/master-dat
    error: {
         message: "Not Found",
         data: offeringIds,
-      },
+      }
     };
   }
 
