@@ -2,12 +2,12 @@ const express = require("express");
 const router = express.Router();
 
 // 401 Unauthorized error
-router.post("/smp/unauthorized/v1/products/master-data/list", (req, res) => {
+router.post("/smp/unauthorized/*", (req, res) => {
   res.status(401).send("Jwt is expired");
 });
 
 // 500 Internal Server Error
-router.post("/smp/internal-error/v1/products/master-data/list", (req, res) => {
+router.post("/smp/internal-error/*", (req, res) => {
   res.status(500).json({
     result: {
       status: "error",
