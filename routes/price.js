@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { buildSuccessPayload } = require("../services/payloadBuilder");
 
-// ❌ Price INTERNAL_SERVER_ERROR
+// Price INTERNAL_SERVER_ERROR
 router.post(
   "/price/v1/products/master-data/list",
   (req, res) => {
@@ -10,12 +10,12 @@ router.post(
 
     let successData = {};
 
-    // ✅ Only build stock data if "stock" is explicitly requested
+    // Only build stock data if "stock" is explicitly requested
     if (requestedInfo.includes("stock")) {
       successData = buildSuccessPayload(offeringIds, ["stock"], nodeIds).result.data.success;
     }
 
-    // ❌ Always simulate price error if price is requested
+    // Always simulate price error if price is requested
     const error = requestedInfo.includes("price")
       ? { price: { error: { message: "INTERNAL_SERVER_ERROR" } } }
       : null;
@@ -29,7 +29,7 @@ router.post(
   }
 );
 
-// ❌ Price Not Found
+// Price Not Found
 router.post(
   "/price2/v1/products/master-data/list",
   (req, res) => {
@@ -37,6 +37,7 @@ router.post(
 
   let successData = {};
 
+// Only build stock data if "stock" is explicitly requested
  if (requestedInfo.includes("stock")) {
       successData = buildSuccessPayload(offeringIds, ["stock"], nodeIds).result.data.success;
     }
