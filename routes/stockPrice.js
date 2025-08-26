@@ -11,7 +11,7 @@ router.post("/stockPrice/*",
     error.stock = { error: { message: "NOT_FOUND", data: offeringIds } };
   }
   if (!requestedInfo || requestedInfo.includes("price")) {
-    error.price = { error: { message: "Not Found", data: offeringIds } };
+    error.price = { status:404 ,statusText: "Not Found",dara: "", offeringIds: offeringIds };
   }
 
   res.status(200).json({
