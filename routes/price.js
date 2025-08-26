@@ -35,7 +35,11 @@ router.post(
   (req, res) => {
   const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
 
-  const successData = buildSuccessPayload(offeringIds, ["stock"], nodeIds).result.data.success;
+  let successData = {};
+
+ if (requestedInfo.includes("stock")) {
+      successData = buildSuccessPayload(offeringIds, ["stock"], nodeIds).result.data.success;
+    }
   const error = (!requestedInfo || requestedInfo.includes("price")) 
     ? { price: { error: { message: "Not Found", data: offeringIds } } }
     : null;
