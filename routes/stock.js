@@ -2,14 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { buildSuccessPayload } = require("../services/payloadBuilder");
 
-// Success endpoint
-router.post("/stock-success", (req, res) => {
-  const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
-  res.status(200).json(buildSuccessPayload(offeringIds, requestedInfo, nodeIds));
-});
-
 // Stock NOT_FOUND error but allow price if requested
-router.post("/stock/v1/products/master-data/list", (req, res) => {
+router.post("/stock/*", (req, res) => {
   const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
 
   let successData = {};
