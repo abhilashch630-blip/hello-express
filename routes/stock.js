@@ -9,8 +9,7 @@ router.post("/stock-success", (req, res) => {
 });
 
 // ❌ Stock NOT_FOUND error
-router.post(
-  ["/stock/v1/products/master-data/list", "/stock/v1/products/master-data/list/"],
+router.post("/stock/v1/products/master-data/list",
   (req, res) => {
     const { offeringIds = [], requestedInfo = [] } = req.body;
 
