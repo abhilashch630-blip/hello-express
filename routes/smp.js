@@ -3,17 +3,7 @@ const router = express.Router();
 
 // 401 Unauthorized error
 router.post("/smp/unauthorized/v1/products/master-data/list", (req, res) => {
-  res.status(401).json({
-    result: {
-      status: "error",
-      data: {
-        status: 401,
-        statusText: "Unauthorized",
-        message: "ClientId is Invalid",
-        error: "invalid_client"
-      }
-    }
-  });
+  res.status(401).send("Jwt is expired");
 });
 
 // 500 Internal Server Error
