@@ -53,4 +53,30 @@ router.post(
   });
 });
 
+// Price Not Found 2nd format
+router.post(
+  "/price3/*",
+  (req, res) => {
+  const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
+
+  let successData = {};
+
+// Only build stock data if "stock" is explicitly requested
+ if (requestedInfo.includes("stock")) {
+      successData = buildSuccessPayload(offeringIds, ["stock"], nodeIds).result.data.success;
+    }
+  const error = {};
+  if (requestedInfo.includes("price")) {
+    error.price = {
+      error: { message: "NOT_FOUND", data: offeringIds },
+    };
+  }
+  res.status(200).json({
+    result: {
+      status: "success",
+      data: { success: successData, error },
+    },
+  });
+});
+
 module.exports = router;
