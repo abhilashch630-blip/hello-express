@@ -43,9 +43,9 @@ router.post("/stock/authError*", (req, res) => {
     successData = buildSuccessPayload(offeringIds, ["price"], nodeIds).result.data.success;
   }
 
-  // If "stock" was requested, return NOT_FOUND error for stock
-  const error = null;
-  if (hasStock) {
+  // If "stock" was requested, return Unauthorized error for stock
+  let error = null;
+  if (requestedInfo.includes("stock")) {
     error.stock = {
       status: 401,
       statusText: "Unauthorized",
