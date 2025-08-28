@@ -32,4 +32,39 @@ router.post("/stock/*", (req, res) => {
   });
 });
 
+// Stock authError error but allow price if requested
+router.post("/stock/authError*", (req, res) => {
+  const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
+
+  let successData = {};
+
+  // 👉 If "price" was requested, build only the price part
+  if (requestedInfo.includes("price")) {
+    successData = buildSuccessPayload(offeringIds, ["price"], nodeIds).result.data.success;
+  }
+
+  // If "stock" was requested, return NOT_FOUND error for stock
+  const error = {};
+  if (hasStock) {
+    error.stock = {
+      status: 401,
+      statusText: "Unauthorized",
+      data: {
+        ErrorCode: "invalid_client",
+        Error: "ClientId is Invalid"
+      }
+    };
+  }
+
+  res.status(200).json({
+    result: {
+      status: "success",
+      data: {
+        success: successData,
+        error: Object.keys(error).length ? error : null,
+      },
+    },
+  });
+});
+
 module.exports = router;
