@@ -44,7 +44,7 @@ router.post("/stock/authError*", (req, res) => {
   }
 
   // If "stock" was requested, return Unauthorized error for stock
-  let error = null;
+  let error = {};
   if (requestedInfo.includes("stock")) {
     error.stock = {
       status: 401,
@@ -54,6 +54,11 @@ router.post("/stock/authError*", (req, res) => {
         Error: "ClientId is Invalid"
       }
     };
+  }
+
+  // If no errors added, make error = null
+  if (Object.keys(error).length === 0) {
+    error = null;
   }
 
   res.status(200).json({
