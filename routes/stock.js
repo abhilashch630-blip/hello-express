@@ -3,12 +3,12 @@ const router = express.Router();
 const { buildSuccessPayload } = require("../services/payloadBuilder");
 
 // Stock NOT_FOUND error but allow price if requested
-router.post("/stock/*", (req, res) => {
+router.post("/stock/notFound/*", (req, res) => {
   const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
 
   let successData = {};
 
-  // 👉 If "price" was requested, build only the price part
+  // If "price" was requested, build only the price part
   if (requestedInfo.includes("price")) {
     successData = buildSuccessPayload(offeringIds, ["price"], nodeIds).result.data.success;
   }
@@ -38,13 +38,13 @@ router.post("/stock/authError*", (req, res) => {
 
   let successData = {};
 
-  // 👉 If "price" was requested, build only the price part
+  // If "price" was requested, build only the price part
   if (requestedInfo.includes("price")) {
     successData = buildSuccessPayload(offeringIds, ["price"], nodeIds).result.data.success;
   }
 
   // If "stock" was requested, return NOT_FOUND error for stock
-  const error = {};
+  const error = null;
   if (hasStock) {
     error.stock = {
       status: 401,
