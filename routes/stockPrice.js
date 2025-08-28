@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // Stock & Price "Not Found"
-router.post("/stockPrice/*",
+router.post("/priceStock/*",
   (req, res) => {
   const { offeringIds = [], requestedInfo = [] } = req.body;
 
