@@ -79,7 +79,7 @@ router.post(
   });
 });
 
-// Price Not Found 2nd format
+// Price authError
 router.post(
   "/price/authError/*",
   (req, res) => {
@@ -90,13 +90,13 @@ router.post(
 // Only build stock data if "stock" is explicitly requested
  if (requestedInfo.includes("stock")) {
       successData = buildSuccessPayload(offeringIds, ["stock"], nodeIds).result.data.success;
-    }
-  const error = {};
-  if (hasPrice) {
-    error.price = {
-      error: "RBAC: access denied"
     };
-  }
+
+ const hasPrice = requestedInfo.includes("price");
+  const error = hasPrice
+    ? { price: { error: "RBAC: access denied" } }
+    : null;
+    
   res.status(200).json({
     result: {
       status: "success",
