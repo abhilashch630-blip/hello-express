@@ -4,7 +4,7 @@ const { buildSuccessPayload } = require("../services/payloadBuilder");
 
 // Price INTERNAL_SERVER_ERROR
 router.post(
-  "/price/*",
+  "/price/server/*",
   (req, res) => {
     const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
 
@@ -31,7 +31,7 @@ router.post(
 
 // Price Not Found
 router.post(
-  "/price2/*",
+  "/price/404/*",
   (req, res) => {
   const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
 
@@ -55,7 +55,7 @@ router.post(
 
 // Price Not Found 2nd format
 router.post(
-  "/price3/*",
+  "/price/notFound/*",
   (req, res) => {
   const { offeringIds = [], requestedInfo = [], nodeIds = [] } = req.body;
 
