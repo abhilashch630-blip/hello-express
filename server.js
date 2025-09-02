@@ -9,6 +9,7 @@ app.use(require("./routes/stock"));
 app.use(require("./routes/price"));
 app.use(require("./routes/stockPrice"));
 app.use(require("./routes/smp"));
+app.use(require("./routes/seller"));
 
 app.listen(PORT, () => {
   console.log(`Mock server running on port ${PORT}`);
