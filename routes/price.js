@@ -42,7 +42,7 @@ router.post(
       successData = buildSuccessPayload(offeringIds, ["stock"], nodeIds).result.data.success;
     }
   const error = (!requestedInfo || requestedInfo.includes("price")) 
-    ? { price: {status:404 ,statusText: "Not Found",dara: "", offeringIds: offeringIds  } }
+    ? { price: {status:404 ,statusText: "Not Found",data: "", offeringIds: offeringIds  } }
     : null;
 
   res.status(200).json({
