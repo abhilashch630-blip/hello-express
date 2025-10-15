@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // Seller Bad Request error response
-router.get("/seller/error/*", (req, res) => {
+router.get("/seller/error*", (req, res) => {
   res.status(400).json({
     errors: [
       {
@@ -18,7 +18,7 @@ router.get("/seller/error/*", (req, res) => {
 });
 
 // Seller empty data response
-router.get("/seller/empty/*", (req, res) => {
+router.get("/seller/empty*", (req, res) => {
   res.status(200).json({
     data: [],
   });
