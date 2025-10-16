@@ -6,8 +6,23 @@ router.post("/smp/unauthorized/*", (req, res) => {
   res.status(401).send("Jwt is expired");
 });
 
+// 502 Bad Gateway
+router.post("/smp/502/*", (req, res) => {
+  res.status(502).send("Bad Gateway");
+});
+
+// 503 Service Unavailable
+router.post("/smp/503/*", (req, res) => {
+  res.status(503).send("Service Unavailable");
+});
+
+// 504 Gateway Timeout
+router.post("/smp/504/*", (req, res) => {
+  res.status(504).send("Gateway Timeout");
+});
+
 // 500 Internal Server Error
-router.post("/smp/internal-error/*", (req, res) => {
+router.post("/smp/500/*", (req, res) => {
   res.status(500).json({
     result: {
       status: "error",
