@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { buildWarehouseInfo } = require("../services/payloadBuilder");
 
 // Seller Bad Request error response
 router.get("/seller/error*", (req, res) => {
@@ -22,6 +23,12 @@ router.get("/seller/empty*", (req, res) => {
   res.status(200).json({
     data: [],
   });
+});
+
+// Seller warehouse info response
+router.get("/seller/warehouse*", (req, res) => {
+  const warehouseResponse = buildWarehouseInfo();
+  res.status(200).json(warehouseResponse);
 });
 
 module.exports = router;
