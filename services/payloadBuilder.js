@@ -82,4 +82,78 @@ function buildSuccessPayload(offeringIds, requestedInfo, nodeIds) {
   };
 }
 
-module.exports = { buildSuccessPayload };
+/**
+ * Build warehouse info payload with nodeId = null
+ */
+function buildWarehouseInfo() {
+  return {
+    data: [
+      {
+        name: "testWareHouse19",
+        sellerWarehouseId: "sellerTdrLiveFDC5610776",
+        facilityId: "GSC-SC70AFDC5610776",
+        warehouseType: "only_shipments",
+        isFbf: false,
+        isDefault: true,
+        isPickupStore: false,
+        isEnabled: true,
+        address: {
+          addressLine1: "Calle Mario Valdivia 1801",
+          addressLine2: null,
+          addressLine3: null,
+          municipal: "Vitacura",
+          city: "Santiago",
+          state: "Metropolitana de Santiago",
+          postcode: null,
+          countryCode: "CL",
+          email: "alartiga@inspiracorp.com.pe",
+          name: "Angélica Lártiga",
+          contacts: [
+            {
+              type: "Phone",
+              value: "67867868",
+              typeDescription: "Default warehouse phone number",
+            },
+          ],
+          latitude: "-12.0755574",
+          longitude: "-77.098199",
+          cityCode: null,
+          stateCode: null,
+          country: "Chile",
+          contactAddress2Code: "13132",
+          phone: "67867868",
+        },
+        nodeId: null, // <-- as requested
+        zoneAvailable: false,
+        zoneUpdatedAt: "2022-06-23T06:01:04.639Z",
+        workingSchedule: [
+          {
+            day: "monday",
+            shiftHours: [
+              { openingHour: "09:00 AM", closingHour: "06:00 PM" },
+            ],
+          },
+          {
+            day: "tuesday",
+            shiftHours: [
+              { openingHour: "09:00 AM", closingHour: "06:00 PM" },
+            ],
+          },
+        ],
+      },
+    ],
+    meta: {
+      pagination: {
+        recordsReturnedPerPage: 1,
+        limit: 20,
+        offset: 0,
+        pageNumber: 1,
+        totalPages: 1,
+        totalRecords: 1,
+      },
+    },
+    message: "Success",
+  };
+}
+
+module.exports = { buildSuccessPayload, buildWarehouseInfo };
