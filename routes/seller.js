@@ -26,8 +26,21 @@ router.get("/seller/empty*", (req, res) => {
 });
 
 // Seller warehouse info response
-router.get("/seller/warehouse*", (req, res) => {
+router.get("/seller/nullNodeid*", (req, res) => {
   const warehouseResponse = buildWarehouseInfo();
+  res.status(200).json(warehouseResponse);
+});
+
+router.get("/seller/emptyNodeid*", (req, res) => {
+  const warehouseResponse = buildWarehouseInfo();
+
+  // Overwrite nodeId with empty string
+  if (warehouseResponse?.data?.length) {
+    warehouseResponse.data.forEach((item) => {
+      item.nodeId = "";
+    });
+  }
+
   res.status(200).json(warehouseResponse);
 });
 
