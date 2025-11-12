@@ -19,7 +19,7 @@ router.get("/seller/error*", (req, res) => {
 });
 
 // Seller empty data response
-router.get("/seller/empty*", (req, res) => {
+router.get("/seller/emptyResponse*", (req, res) => {
   res.status(200).json({
     data: [],
   });
